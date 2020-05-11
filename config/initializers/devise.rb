@@ -264,7 +264,9 @@ Devise.setup do |config|
 
   config.omniauth :twitter, ENV['Twitter_API'], ENV['Twitter_API_Secret'], callbacl_url: 'http://localhost:3000/users/auth/twitter/callback'
 
+  config.omniauth :facebook, ENV['Facebook_API'], ENV['Facebook_API_Secret']
 
+  config.omniauth :line, ENV['Line_KEY'], ENV['Line_SECRET']
   # ==> Warden configuration
   # If you want to use other strategies, that are not supported by Devise, or
   # change the failure app, you can configure them inside the config.warden block.
