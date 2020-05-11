@@ -3,25 +3,17 @@ class User < ApplicationRecord
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable,
-         :lockable, :timeoutable, :trackable,
-         :omniauthable, omniauth_providers:[:twitter]
+         :omniauthable
 
   def self.from_omniauth(auth)
-    find_or_create_by(provider: auth["provider"], uid: auth["uid"]) do |user|
-      user.provider = auth["provider"]
-      user.uid = auth["uid"]
-      user.username = auth["info"]["nickname"]
+    where(provider: auth.provider, uid: auth.uid).first_or_create do |user|
+      user.provider = auth.provider
+      user.uid = auth.uid
+      user.username = auth.username
+      user.email = auth.info.email
+      user.password = Devise.friendly_token[0, 20]
+      user.image = auth.info.image.gsub("_normal","") if user.provider == "twitter"
+      user.image = auth.info.image.gsub("picture","picture?type=large") if user.provider == "facebook"
     end
   end 
-
-  def self.new_with_session(params, session)
-    if session["devise.user_attributes"] 
-      new(session["devise.user_attributes"]) do |user|
-        user.attributes = params
-      end
-    else
-      super
-    end
-  end
-
 end
